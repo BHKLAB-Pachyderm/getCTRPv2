@@ -92,7 +92,7 @@ sensitivityProfiles <- data.frame("auc_published" = ctrp.sensitivityPub$area_und
 
 rownames(sensitivityProfiles) <- ctrp.sensitivityPub$experimentIds 
 
-sensitivityRaw <- sensitivityRaw[rownames(sensitivityInfo),,]
+raw.sensitivity <- raw.sensitivity[rownames(sensitivityInfo),,]
 
 sensitivityProfiles <- sensitivityProfiles[rownames(sensitivityInfo),]
 
