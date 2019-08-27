@@ -1,6 +1,7 @@
 library(downloader)
 library(PharmacoGx)
 library(devtools)
+library(Biobase)
 
 getCTRPv2P <-
   function (
