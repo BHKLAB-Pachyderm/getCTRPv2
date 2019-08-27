@@ -51,6 +51,27 @@ matchToIDTableDRUG <- function(ids,tbl, column) {
   
   recomputed <- res
   
+    
+    
+ctrp.sensitivityInfo <- read.delim("/pfs/ctrpv2raw/v20.meta.per_experiment.txt")
+
+repExps <- unique(ctrp.sensitivityInfo$experiment_id[duplicated(ctrp.sensitivityInfo$experiment_id)])
+
+
+for(exp in repExps){
+
+  myx <- ctrp.sensitivityInfo$experiment_id == exp
+  duplicates <- duplicated(ctrp.sensitivityInfo$experiment_id) & myx
+  first <- myx & !duplicates
+  
+  ctrp.sensitivityInfo[first,] <- apply(ctrp.sensitivityInfo[myx,], 2, function(x) paste(unique(x), collapse="//"))
+
+  ctrp.sensitivityInfo <- ctrp.sensitivityInfo[!duplicates,]
+}
+
+ctrp.sensitivityInfo[,"cellid"] <- ctrp.cells$cellid[match(ctrp.sensitivityInfo$master_ccl_id, ctrp.cells$master_ccl_id)]
+                                        
+                                        
   #######################################################
 ###### Published AUC and EC50 values 
 #######################################################
