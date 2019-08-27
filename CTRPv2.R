@@ -112,6 +112,7 @@ sensitivityProfiles[,"EC50"] <- as.numeric(sensitivityProfiles[,"EC50"])
 #tipifarnib-P1 & P2 have same unique id. Combined them and separated by /// into one row (row names need unique ids)
 sensitivityInfo$drugid[sensitivityInfo$drugid == "Tipifarnib-P1"] <- "Tipifarnib"
 sensitivityInfo$drugid[sensitivityInfo$drugid == "Tipifarnib-P2"] <- "Tipifarnib"
+drug_match <- ctrp.drugs$drugid
 ctrp.drugs[218,] <- paste0(ctrp.drugs[218,], sep="///" , ctrp.drugs[219,])
 ctrp.drugs <- ctrp.drugs[-219,]
 drug_match[218] <- "Tipifarnib"
