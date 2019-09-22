@@ -97,8 +97,8 @@ sensitivityProfiles <- sensitivityProfiles[rownames(sensitivityInfo),]
 #sensitivityProfiles[,c("auc_recomputed", "ic50_recomputed", "Hill-Slope", "E_inf", "EC50")] <- cbind(sensitivityProfiles, recomputed[,"auc_recomputed"][rownames(sensitivityProfiles)], recomputed[,"ic50_recomputed"][rownames(sensitivityProfiles)], recomputed[,"HS"][rownames(sensitivityProfiles)], recomputed[,"E_inf"][rownames(sensitivityProfiles)],recomputed[,"EC50"][rownames(sensitivityProfiles)] )
 
 sensitivityProfiles <- cbind(sensitivityProfiles, recomputed[rownames(sensitivityProfiles),])
-sensitivityProfiles[,"AAC"] <- as.numeric(sensitivityProfiles[,"AAC"])
-sensitivityProfiles[,"IC50"] <- as.numeric(sensitivityProfiles[,"IC50"])
+sensitivityProfiles[,"aac_recomputed"] <- as.numeric(sensitivityProfiles[,"AAC"])
+sensitivityProfiles[,"ic50_recomputed"] <- as.numeric(sensitivityProfiles[,"IC50"])
 sensitivityProfiles[,"HS"] <- as.numeric(sensitivityProfiles[,"HS"])
 sensitivityProfiles[,"E_inf"] <- as.numeric(sensitivityProfiles[,"E_inf"])
 sensitivityProfiles[,"EC50"] <- as.numeric(sensitivityProfiles[,"EC50"])
@@ -209,7 +209,7 @@ CTRPv2 <- PharmacoSet(name="CTRPv2",
  datasetType="sensitivity",
  verify = TRUE)
  
- save(CTRPv2,file="/pfs/out/CTRPv2.RData")
+ saveRDS(CTRPv2,file="/pfs/out/CTRPv2.rds")
     
  # return (CTRPv2)
  
