@@ -81,7 +81,7 @@ ctrp.sensitivityPub$experimentIds <- experimentIdsPub
 
 rownames(ctrp.sensitivityPub) <- ctrp.sensitivityPub$experimentIds 
 
-sensitivityProfiles <- data.frame("auc_published" = ctrp.sensitivityPub$area_under_curve, "ec50_published"=ctrp.sensitivityPub$apparent_ec50_umol)
+sensitivityProfiles <- data.frame("aac_published" = ctrp.sensitivityPub$area_under_curve, "ec50_published"=ctrp.sensitivityPub$apparent_ec50_umol)
 
 rownames(sensitivityProfiles) <- ctrp.sensitivityPub$experimentIds 
 
