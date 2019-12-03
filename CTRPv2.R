@@ -187,7 +187,7 @@ curationTissue <- data.frame(unique.tissueid = cell_all[curationCell$unique.cell
 rownames(curationTissue) <- curationCell$unique.cellid
 
 
-ctrp.cells$tissueid <- curationTissue[ctrp.cells$cellid,]
+ctrp.cells$tissueid <- curationTissue[ctrp.cells$cellid,"unique.tissueid"]
 
 
 
