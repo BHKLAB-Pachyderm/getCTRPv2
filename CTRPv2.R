@@ -81,7 +81,7 @@ ctrp.sensitivityPub$experimentIds <- experimentIdsPub
 
 rownames(ctrp.sensitivityPub) <- ctrp.sensitivityPub$experimentIds 
 
-sensitivityProfiles <- data.frame("auc_published" = ctrp.sensitivityPub$area_under_curve, "ec50_published"=ctrp.sensitivityPub$apparent_ec50_umol)
+sensitivityProfiles <- data.frame("aac_published" = ctrp.sensitivityPub$area_under_curve, "ec50_published"=ctrp.sensitivityPub$apparent_ec50_umol)
 
 rownames(sensitivityProfiles) <- ctrp.sensitivityPub$experimentIds 
 
@@ -194,6 +194,21 @@ ctrp.cells$tissueid <- curationTissue[ctrp.cells$cellid,"unique.tissueid"]
 emptyEset <- ExpressionSet()
 annotation(emptyEset) <- "CTRP contains no molecular profiles of cell lines. Please use data from other datasets. This eset is empty placeholder."
 
+    
+cellsPresent <- sort(unionList(sensitivityInfo$cellid))    
+ctrp.cells <- ctrp.cells[cellsPresent,]
+    
+drugsPresent <- sort(unique(sensitivityInfo$drugid))
+ctrp.drugs <- ctrp.drugs[drugsPresent,]
+    
+drug_all <- read.csv("/pfs/downAnnotations/drugs_with_ids.csv", na.strings=c("", " ", "NA"))
+drug_all <- drug_all[which(!is.na(drug_all[ , "CTRPv2.drugid"])),]
+drug_all <- drug_all[ , c("unique.drugid", "CTRPv2.drugid","smiles","inchikey","cid","FDA")]
+rownames(drug_all) <- drug_all[ , "unique.drugid"]
+
+drug_all <- drug_all[rownames(ctrp.drugs),]
+ctrp.drugs[,c("smiles","inchikey","cid","FDA")] <- drug_all[,c("smiles","inchikey","cid","FDA")]
+    
 
 CTRPv2 <- PharmacoSet(name="CTRPv2", 
  molecularProfiles = list("rna" = emptyEset),
