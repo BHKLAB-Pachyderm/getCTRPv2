@@ -183,7 +183,7 @@ rownames(ctrp.cells) <- ctrp.cells$cellid
 
 
 
-curationTissue <- data.frame(unique.tissueid = cell_all[curationCell$unique.cellid, "unique.tissueid"], "CTRPv2.tissueid" = ctrp.cells$tissueid[which(curationCell$unique.cellid %in% rownames(ctrp.cells))])
+curationTissue <- data.frame(unique.tissueid = cell_all[curationCell$unique.cellid, "unique.tissueid"], "CTRPv2.tissueid" = ctrp.cells$tissueid[match(curationCell$unique.cellid,rownames(ctrp.cells))])
 rownames(curationTissue) <- curationCell$unique.cellid
 
 
