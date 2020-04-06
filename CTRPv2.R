@@ -191,10 +191,16 @@ ctrp.cells$tissueid <- curationTissue[ctrp.cells$cellid,"unique.tissueid"]
 emptyEset <- ExpressionSet()
 annotation(emptyEset) <- "CTRP contains no molecular profiles of cell lines. Please use data from other datasets. This eset is empty placeholder."
 
-    
 cellsPresent <- sort(unionList(sensitivityInfo$cellid))    
 ctrp.cells <- ctrp.cells[cellsPresent,]
-    
+
+ctrp.cells$tissueid <- curationTissue[rownames(ctrp.cells), "unique.tissueid"]
+ctrp.cells$cellid <- rownames(ctrp.cells)
+
+curationTissue <- curationTissue[rownames(ctrp.cells),]
+curationCell <- curationCell[rownames(ctrp.cells),]
+
+
 drugsPresent <- sort(unique(sensitivityInfo$drugid))
 ctrp.drugs <- ctrp.drugs[drugsPresent,]
     
