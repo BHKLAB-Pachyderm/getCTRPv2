@@ -7,6 +7,10 @@ library(reshape2)
 
 
 options(stringsAsFactors=FALSE)
+
+args = commandArgs(trailingOnly=TRUE)
+ORCESTRA_ID <- args
+
 badchars <- "[\xb5]|[]|[ ,]|[;]|[:]|[-]|[+]|[*]|[%]|[$]|[#]|[{]|[}]|[[]|[]]|[|]|[\\^]|[\\]|[.]|[_]|[ ]|[(]|[)]"
 
 cell_all <- read.csv("/pfs/downAnnotations/cell_annotation_all.csv", na.strings=c("", " ", "NA"))
@@ -405,8 +409,13 @@ print("filter done")
 CTRPv2@sensitivity$profiles[noisy_out$noisy, ] <- NA
 
 
- saveRDS(CTRPv2,file="/pfs/out/CTRPv2.rds")
+saveRDS(CTRPv2,file="/pfs/out/CTRPv2.rds")
 
-
+dataset <- "CTRPv2"		 
+#output ORCESTRA_ID and Pachyderm commit id
+write.table(dataset, file="/pfs/out/dataset.txt", row.names = F ,quote = F, sep = "\t", col.names = F)
+write.table(ORCESTRA_ID, file="/pfs/out/orcestra_id.txt", row.names = F ,quote = F, sep = "\t", col.names = F)				   
+pach_commit_id <- Sys.getenv("PACH_OUTPUT_COMMIT_ID")
+write.table(pach_commit_id, file="/pfs/out/commit_id.txt", row.names = F ,quote = F, sep = "\t", col.names = F) 
  
   
