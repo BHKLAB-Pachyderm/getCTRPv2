@@ -332,6 +332,7 @@ ctrp.cells$CellLine.Type <- cell_type
 #add metastatic info to cell_info		 
 metastatic <- cell_all$Metastatic[match(ctrp.cells$cellid, cell_all$unique.cellid)]
 ctrp.cells$Metastatic <- metastatic		 
+curationDrug <- curationDrug[rownames(ctrp.drugs),]
 		 
 standardize <- standardizeRawDataConcRange(sens.info = sensitivityInfo, sens.raw = raw.sensitivity)
 
