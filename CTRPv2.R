@@ -4,6 +4,8 @@ library(devtools)
 library(Biobase)
 library(data.table)
 library(reshape2)
+library(CoreGx)
+library(SummarizedExperiment)
 
 
 options(stringsAsFactors=FALSE)
@@ -192,10 +194,10 @@ ctrp.cells$tissueid <- curationTissue[ctrp.cells$cellid,"unique.tissueid"]
 
 
 
-emptyEset <- ExpressionSet()
-annotation(emptyEset) <- "CTRP contains no molecular profiles of cell lines. Please use data from other datasets. This eset is empty placeholder."
+emptySE <- SummarizedExperiment()
+emptySE@metadata$annotation <- "CTRP contains no molecular profiles of cell lines. Please use data from other datasets. This eset is empty placeholder."
 
-cellsPresent <- sort(unionList(sensitivityInfo$cellid))    
+cellsPresent <- sort(CoreGx::.unionList(sensitivityInfo$cellid))    
 ctrp.cells <- ctrp.cells[cellsPresent,]
 
 ctrp.cells$tissueid <- curationTissue[rownames(ctrp.cells), "unique.tissueid"]
@@ -337,8 +339,8 @@ curationDrug <- curationDrug[rownames(ctrp.drugs),]
 standardize <- standardizeRawDataConcRange(sens.info = sensitivityInfo, sens.raw = raw.sensitivity)
 
                  
-CTRPv2 <- PharmacoSet(name="CTRPv2", 
- molecularProfiles = list("rna" = emptyEset),
+CTRPv2 <- PharmacoGx::PharmacoSet(name="CTRPv2", 
+ molecularProfiles = list("rna" = emptySE),
  cell=ctrp.cells, 
  drug=ctrp.drugs, 
  sensitivityInfo=standardize$sens.info, 
