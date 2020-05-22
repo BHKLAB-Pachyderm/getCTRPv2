@@ -194,8 +194,29 @@ ctrp.cells$tissueid <- curationTissue[ctrp.cells$cellid,"unique.tissueid"]
 
 
 
-emptySE <- SummarizedExperiment()
-emptySE@metadata$annotation <- "CTRP contains no molecular profiles of cell lines. Please use data from other datasets. This eset is empty placeholder."
+emptyE <- ExpressionSet()
+pData(emptyE)$cellid <- character()
+pData(emptyE)$batchid <- character()
+fData(emptyE)$BEST <- vector()
+fData(emptyE)$Symbol <- character()
+annotation(emptyE) <- "CTRP contains no molecular profiles of cell lines. This SE is empty placeholder."
+
+emptySE <- SummarizedExperiment::SummarizedExperiment(
+  ## TODO:: Do we want to pass an environment for better memory efficiency?
+  assays=S4Vectors::SimpleList(as.list(Biobase::assayData(emptyE))
+  ),
+  # Switch rearrange columns so that IDs are first, probes second
+  rowData=S4Vectors::DataFrame(Biobase::fData(emptyE),
+                               rownames=rownames(Biobase::fData(emptyE)) 
+  ),
+  colData=S4Vectors::DataFrame(Biobase::pData(emptyE),
+                               rownames=rownames(Biobase::pData(emptyE))
+  ),
+  metadata=list("experimentData" = emptyE@experimentData, 
+                "annotation" = Biobase::annotation(emptyE), 
+                "protocolData" = Biobase::protocolData(emptyE)
+  )
+)
 
 cellsPresent <- sort(CoreGx::.unionList(sensitivityInfo$cellid))    
 ctrp.cells <- ctrp.cells[cellsPresent,]
