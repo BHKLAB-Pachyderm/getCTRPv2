@@ -434,7 +434,7 @@ noisy_out <- filterNoisyCurves2(CTRPv2)
 print("filter done")
 CTRPv2@sensitivity$profiles[noisy_out$noisy, ] <- NA
 
-
+CTRPv2@annotation$version <- 2
 saveRDS(CTRPv2,file="/pfs/out/CTRPv2.rds")
 
 dataset <- "CTRPv2"		 
