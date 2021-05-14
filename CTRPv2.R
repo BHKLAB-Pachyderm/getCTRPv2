@@ -459,5 +459,260 @@ write.table(dataset, file="/pfs/out/dataset.txt", row.names = F ,quote = F, sep 
 write.table(ORCESTRA_ID, file="/pfs/out/orcestra_id.txt", row.names = F ,quote = F, sep = "\t", col.names = F)				   
 pach_commit_id <- Sys.getenv("PACH_OUTPUT_COMMIT_ID")
 write.table(pach_commit_id, file="/pfs/out/commit_id.txt", row.names = F ,quote = F, sep = "\t", col.names = F) 
- 
-  
+
+	     
+###########################
+#####Provenance Domain#####
+###########################
+
+#Created and modified dates
+#Sys.setenv(TZ = "EST")
+created <- as.POSIXct(Sys.time(), format = "%Y-%m-%dT%H:%M:%S", tz = "EST")
+modified <- as.POSIXct(Sys.time(), format = "%Y-%m-%dT%H:%M:%S", tz = "EST")
+
+#Contributions
+contributors <- data.frame(
+  "name" = c("Anthony Mammoliti", "Petr Smirnov", "Benjamin Haibe-Kains"),
+  "affiliation" = c(rep("University Health Network", 3)),
+  "email" = c("anthony.mammoliti@uhnresearch.ca", "petr.smirnov@utoronto.ca", "Benjamin.Haibe-Kains@uhnresearch.ca"),
+  "contribution" = c("createdBy","createdBy","authoredBy"),
+  "orcid" = c(NA,NA,"https://orcid.org/0000-0002-7684-0079"),
+  stringsAsFactors = FALSE
+)
+
+#License
+license <- "https://opensource.org/licenses/Apache-2.0"
+
+#Name of biocompute object
+name <- "CTRPv2"
+
+#Version of biocompute object
+bio_version <- "1.0.0"
+
+#Embargo (none)
+embargo <- c()
+
+#Derived from and obsolete after (none)
+derived_from <- c()
+obsolete_after <- c()
+
+#reviewers (none)
+review <- c()
+
+#compile domain
+provenance <- compose_provenance_v1.3.0(
+  name, bio_version, review, derived_from, obsolete_after,
+  embargo, created, modified, contributors, license
+)
+provenance %>% convert_json()
+
+
+############################
+#####Description Domain#####
+############################
+times_rnaseq <- as.POSIXct("2020-01-20T1:04:10", format = "%Y-%m-%dT%H:%M:%S", tz = "EST")
+#Keywords and platform info
+keywords <- c("Biomedical", "Pharmacogenomics", "Cellline", "Drug")
+platform <- c("Pachyderm", "ORCESTRA (orcestra.ca)", "Linux/Ubuntu")
+
+#Metadata for each pipeline step
+pipeline_meta <- data.frame(
+  "step_number" = c("1","2","3"),
+  "name" = c("Curated Sample and treatment identifier compilation",
+             "Drug sensitivity processing",
+             "Build data object"),
+  "description" = c("Download of appropriate sample and treatment identifiers from GitHub (curations performed by BHK Lab - http://bhklab.ca)",
+                    "Process sensitivity data",
+                    "Building of ORCESTRA data object"),
+  "version" = c(1.0,1.0,1.0),
+  stringsAsFactors = FALSE
+)
+
+#Inputs for each pipeline step
+pipeline_input <- data.frame(
+  "step_number" = c("1","1","2","3"),
+  "filename" = c("Sample annotation data",
+                 "Treatment annotations",
+                 "Raw sensitivity data",
+                 "Script for data object generation"),
+  "uri" = c("https://github.com/BHKLAB-Pachyderm/Annotations/blob/master/cell_annotation_all.csv",
+    "https://github.com/BHKLAB-Pachyderm/Annotations/blob/master/drugs_with_ids.csv",
+    "ftp://anonymous:guest@caftpd.nci.nih.gov/pub/OCG-DCC/CTD2/Broad/CTRPv2.0_2015_ctd2_ExpandedDataset/CTRPv2.0_2015_ctd2_ExpandedDataset.zip",
+    "https://github.com/BHKLAB-Pachyderm/getCTRPv2/CTRPv2.R"
+  ),
+  "access_time" = c(created,created,created,created),
+  stringsAsFactors = FALSE
+)
+
+
+#Outputs for each pipeline step
+pipeline_output <- data.frame(
+  "step_number" = c("1","1","2","2","2","3"),
+  "filename" = c("Downloaded sample annotations",
+                 "Downloaded treatment annotations",
+                 "Downloaded raw sensitivity data",
+                 "Processed sensitivity data in parallel",
+                 "Compiled sensitivity data",
+                 "Data object"),
+  "uri" = c("/pfs/downAnnotations/cell_annotation_all.csv",
+    "/pfs/downAnnotations/drugs_with_ids.csv",
+    "/pfs/CTRPv2RawSensitivity/drug_post.RData",
+    "/pfs/calculatectrpv2RAW/slice_$.rds",
+    "/pfs/ctrpv2ProfilesAssemble/profiles.RData",
+    "/pfs/out/CTRPv2.rds"
+  ),
+  "access_time" = c(created,created,created,created,created,created),
+  stringsAsFactors = FALSE
+)
+
+#xref (none)
+xref <- c()
+
+#pipeline prereq (none)
+pipeline_prerequisite <- c()
+
+#compile domain
+description <- compose_description_v1.3.0(
+  keywords, xref, platform,
+  pipeline_meta, pipeline_prerequisite, pipeline_input, pipeline_output
+)
+description %>% convert_json()
+
+
+############################
+######Execution Domain######
+############################
+
+script <- c()
+script_driver <- c()
+
+#software/tools and its versions used for data object creation
+software_prerequisites <- data.frame(
+  "name" = c("Pachyderm", "Docker Image"),
+  "version" = c("1.9.3", "v3"),
+  "uri" = c(
+    "https://www.pachyderm.com", "https://hub.docker.com/r/bhklab/pharmacogx2.0"
+  ),
+  stringsAsFactors = FALSE
+)
+
+software_prerequisites[,"access_time"] <- rep(NA, length(software_prerequisites$name))
+software_prerequisites[,"sha1_chksum"] <- rep(NA, length(software_prerequisites$name))
+
+external_data_endpoints <- c()
+environment_variables <- c()
+
+execution <- compose_execution_v1.3.0(
+  script, script_driver, software_prerequisites, external_data_endpoints, environment_variables
+)
+execution %>% convert_json()
+
+
+############################
+######Extension Domain######
+############################
+
+#repo of scripts/data used
+scm_repository <- data.frame("extension_schema"= c("https://github.com/BHKLAB-Pachyderm"))
+scm_type <- "git"
+scm_commit <- c()
+scm_path <- c()
+scm_preview <- c()
+
+scm <- compose_scm(scm_repository, scm_type, scm_commit, scm_path, scm_preview)
+scm %>% convert_json()
+
+extension <- compose_extension_v1.3.0(scm)
+extension %>% convert_json()
+
+############################
+######Parametric Domain#####
+############################
+
+df_parametric <- data.frame(
+  "param" = c(),
+  "value" = c(),
+  "step" = c(),
+  stringsAsFactors = FALSE
+)
+
+parametric <- compose_parametric_v1.3.0(df_parametric)
+parametric %>% convert_json()
+
+
+
+############################
+######Usability Domain######
+############################
+
+#usability of our data objects
+text <- c(
+  "Pipeline for creating CTRPv2 data object through ORCESTRA (orcestra.ca), a platform for the reproducible and transparent processing, sharing, and analysis of biomedical data."
+)
+
+usability <- compose_usability_v1.3.0(text)
+usability %>% convert_json()
+
+
+######################
+######I/O Domain######
+######################
+
+input_subdomain <- data.frame(
+  "step_number" = c("1","1","2","3"),
+  "filename" = c("Sample annotation data",
+                 "Treatment annotations",
+                 "Raw sensitivity data",
+                 "Script for data object generation"),
+  "uri" = c("https://github.com/BHKLAB-Pachyderm/Annotations/blob/master/cell_annotation_all.csv",
+            "https://github.com/BHKLAB-Pachyderm/Annotations/blob/master/drugs_with_ids.csv",
+            "ftp://anonymous:guest@caftpd.nci.nih.gov/pub/OCG-DCC/CTD2/Broad/CTRPv2.0_2015_ctd2_ExpandedDataset/CTRPv2.0_2015_ctd2_ExpandedDataset.zip",
+            "https://github.com/BHKLAB-Pachyderm/getCTRPv2/CTRPv2.R"
+  ),
+  "access_time" = c(created,created,created,created),
+  stringsAsFactors = FALSE
+)
+
+output_subdomain <- data.frame(
+  "mediatype" = c("csv", "csv", "RData", "RDS","RData","RDS"),
+  "uri" = c("/pfs/downAnnotations/cell_annotation_all.csv",
+            "/pfs/downAnnotations/drugs_with_ids.csv",
+            "/pfs/CTRPv2RawSensitivity/drug_post.RData",
+            "/pfs/calculatectrpv2RAW/slice_$.rds",
+            "/pfs/ctrpv2ProfilesAssemble/profiles.RData",
+            "/pfs/out/CTRPv2.rds"
+  ),
+  "access_time" = c(created,created,created,created,created,created),
+  stringsAsFactors = FALSE
+)
+
+io <- compose_io_v1.3.0(input_subdomain, output_subdomain)
+io %>% convert_json()
+
+
+########################
+######Error Domain######
+########################
+
+empirical <- c()
+algorithmic <- c()
+
+error <- compose_error(empirical, algorithmic)
+error %>% convert_json()
+
+
+####Retrieve Top Level Fields####
+tlf <- compose_tlf_v1.3.0(
+  provenance, usability, extension, description,
+  execution, parametric, io, error
+)
+tlf %>% convert_json()
+
+
+####Complete BCO####
+
+bco <- biocompute::compose_v1.3.0(
+  tlf, provenance, usability, extension, description,
+  execution, parametric, io, error
+)
+bco %>% convert_json() %>% export_json("/pfs/out/CTRPv2_BCO.json") %>% validate_checksum()  
